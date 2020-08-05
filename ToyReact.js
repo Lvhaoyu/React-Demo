@@ -3,6 +3,13 @@ class ElementWrapper {
 		this.root = document.createElement(type);
 	}
 	setAttribute(name, value) {
+		if (name.match(/^on([\s\S]+)$/)) {
+			let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase());
+			this.root.addEventListener(eventName, value);
+		}
+		if (name === 'className') {
+			name = 'class';
+		}
 		this.root.setAttribute(name, value);
 	}
 	appendChild(vchild) {
@@ -25,16 +32,40 @@ class TextWrapper {
 export class Component {
 	constructor() {
 		this.children = [];
+		this.props = Object.create(null);
 	}
 	setAttribute(name, value) {
+		this.props[name] = value;
 		this[name] = value;
 	}
 	mountTo(parent) {
 		let vdom = this.render();
 		vdom.mountTo(parent);
+		let range = documen.createRange();
+		range.setStartAfter(parent.lastChild);
+		range.setEndAfter(parent.lastChild);
 	}
 	appendChild(vchild) {
 		this.children.push(vchild);
+	}
+	setState(state) {
+		let merge = (oldState, newState) => {
+			for (let p in newState) {
+				if (typeof newState[p] === 'object') {
+					if (typeof oldState[p] !== 'object') {
+						oldState[p] = {};
+					}
+					merge(oldState[p], newState[p]);
+				} else {
+					oldState[p] = newState[p];
+				}
+			}
+		};
+		if (!this.state && state) {
+			this.state = {};
+		}
+		merge(this.state, state);
+		console.log(this.state);
 	}
 }
 
@@ -67,7 +98,7 @@ export let ToyReact = {
 					element.appendChild(child);
 				}
 			}
-		}
+		};
 		insertChildren(children);
 
 		return element;
