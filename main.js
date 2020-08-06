@@ -1,4 +1,5 @@
-import { ToyReact, Component } from './ToyReact.js';
+import { ToyReact } from './toyReact/ToyReact.js';
+import { Component } from './toyReact/Component';
 
 class Square extends Component {
 	constructor(props) {
@@ -15,7 +16,7 @@ class Square extends Component {
 					this.setState({ value: 'x', value1: 'u' });
 				}}
 			>
-				{this.props.value}
+				{this.state.value}
 			</button>
 		);
 	}
