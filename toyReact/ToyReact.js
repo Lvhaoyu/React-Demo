@@ -18,6 +18,9 @@ export let ToyReact = {
 				if (typeof child === 'object' && child instanceof Array) {
 					insertNode(child);
 				} else {
+					if (child === null || child === void 0) {
+						child = '';
+					}
 					if (
 						!(child instanceof Component) &&
 						!(child instanceof ElementWrapper) &&
