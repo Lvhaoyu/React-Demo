@@ -1,6 +1,5 @@
 import { ToyReact } from './toyReact/ToyReact.js';
 import { Component } from './toyReact/Component';
-
 class Square extends Component {
 	constructor(props) {
 		super(props);
@@ -13,10 +12,10 @@ class Square extends Component {
 			<button
 				className='square'
 				onClick={() => {
-					this.setState({ value: 'x', value1: 'u' });
+					this.setState({ value: 'x' });
 				}}
 			>
-				{this.state.value}
+				{this.state.value ? this.state.value : ''}
 			</button>
 		);
 	}

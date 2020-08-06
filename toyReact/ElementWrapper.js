@@ -18,8 +18,8 @@ export default class ElementWrapper {
 			range.setStartAfter(this.root.lastChild);
 			range.setEndAfter(this.root.lastChild);
 		} else {
-			range.setStartAfter(this.root, 0);
-			range.setEndAfter(this.root, 0);
+			range.setStart(this.root, 0);
+			range.setEnd(this.root, 0);
 		}
 		vchild.mountTo(range);
 	}

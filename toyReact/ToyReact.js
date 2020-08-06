@@ -42,8 +42,8 @@ export let ToyReact = {
 			range.setStartAfter(element.lastChild);
 			range.setEndAfter(element.lastChild);
 		} else {
-			range.setStartAfter(element, 0);
-			range.setEndAfter(element, 0);
+			range.setStart(element, 0);
+			range.setEnd(element, 0);
 		}
 		vdom.mountTo(range);
 	},

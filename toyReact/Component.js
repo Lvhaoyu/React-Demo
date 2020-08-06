@@ -9,12 +9,18 @@ export class Component {
 	}
 	mountTo(range) {
 		this.range = range;
-		this.udpate();
+		this.update();
 	}
-	udpate() {
+	update() {
+		let placeHolder = document.createComment('placeHolder');
+		let range = document.createRange();
+		range.setStart(this.range.endContainer, this.range.endOffset);
+		range.setEnd(this.range.endContainer, this.range.endOffset);
+		range.insertNode(placeHolder);
 		this.range.deleteContents();
 		let vdom = this.render();
 		vdom.mountTo(this.range);
+		// placeHolder.parentNode.removeChild(placeHolder);
 	}
 	appendChild(vchild) {
 		this.children.push(vchild);
@@ -36,6 +42,7 @@ export class Component {
 			this.state = {};
 		}
 		merge(this.state, state);
+		this.update();
 		console.log(this.state);
 	}
 }
