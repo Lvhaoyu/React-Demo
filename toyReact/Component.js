@@ -3,6 +3,10 @@ export class Component {
 		this.children = [];
 		this.props = Object.create(null);
 	}
+
+	get type() {
+		return this.constructor.name;
+	}
 	setAttribute(name, value) {
 		this.props[name] = value;
 		this[name] = value;
@@ -12,18 +16,57 @@ export class Component {
 		this.update();
 	}
 	update() {
-		let placeHolder = document.createComment('placeHolder');
-		let range = document.createRange();
-		range.setStart(this.range.endContainer, this.range.endOffset);
-		range.setEnd(this.range.endContainer, this.range.endOffset);
-		range.insertNode(placeHolder);
-		this.range.deleteContents();
-		let vdom = this.render();
-		vdom.mountTo(this.range);
-		// placeHolder.parentNode.removeChild(placeHolder);
+		let vdom = this.vdom;
+		if (this.oldVdom) {
+			const isSameNode = (node1, node2) => {
+				if (node1.type !== node2.type) return false;
+				for (let name in node1.props) {
+					// if (
+					// 	typeof node1.props[name] === 'function' &&
+					// 	typeof node2.props[name] === 'function' &&
+					// 	node1.props[name].toString() === node2.props[name].toString()
+					// )
+					// 	continue;
+					if (
+						typeof node1.props[name] === 'object' &&
+						typeof node2.props[name] === 'object' &&
+						JSON.stringify(node1.props[name]) === JSON.stringify(node2.props[name])
+					)
+						continue;
+					if (node1.props[name] !== node2.props[name]) return false;
+				}
+				if (Object.keys(node1.props).length !== Object.keys(node2.props).length) return false;
+				return true;
+			};
+			const isSameTree = (node1, node2) => {
+				if (!isSameNode(node1, node2)) return false;
+				if (node1.children.length !== node2.children.length) return false;
+				for (let i = 0; i < node1.children.length; i++) {
+					if (!isSameTree(node1.children[i], node2.children[i])) return false;
+				}
+				return true;
+			};
+			const replace = (newTree, oldTree) => {
+				if (isSameTree(newTree, oldTree)) return;
+				if (!isSameNode(newTree, oldTree)) {
+					newTree.mountTo(oldTree.range);
+				} else {
+					for (let i = 0; i < newTree.children.length; i++) {
+						replace(newTree.children[i], oldTree.children[i]);
+					}
+				}
+			};
+			replace(vdom, this.oldVdom);
+		} else {
+			vdom.mountTo(this.range);
+		}
+		this.oldVdom = vdom;
 	}
 	appendChild(vchild) {
 		this.children.push(vchild);
+	}
+	get vdom() {
+		return this.render().vdom;
 	}
 	setState(state) {
 		let merge = (oldState, newState) => {
@@ -47,6 +90,5 @@ export class Component {
 		}
 		merge(this.state, state);
 		this.update();
-		console.log(this.state);
 	}
 }
