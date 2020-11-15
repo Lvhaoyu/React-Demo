@@ -69,7 +69,6 @@ export let ToyReact = {
 			}
 		}
 		insertChildren(children);
-
 		return element;
 	},
 	render(vdom, element) {
